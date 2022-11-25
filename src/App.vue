@@ -1,8 +1,8 @@
 <script setup lang="ts"></script>
 
 <template>
-  <router-link to="/hello">Go to HelloWorld</router-link>
   <router-link to="/login">Go to Login</router-link>
+  <router-link to="/account">Go to Account</router-link>
   <router-view></router-view>
 </template>
 
