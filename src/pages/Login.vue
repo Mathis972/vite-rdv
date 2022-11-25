@@ -1,10 +1,15 @@
 <script setup lang="ts">
 import { User } from '@supabase/gotrue-js';
 import { ref } from 'vue';
+import { useAuthStore } from '../stores/auth';
 import { supabase } from '../supabase';
+import { useRouter } from 'vue-router';
+
 const email = ref('');
 const password = ref('');
 const user = ref<User | null>(null);
+const authUser = useAuthStore();
+const router = useRouter();
 
 const login = async () => {
   try {
@@ -13,7 +18,11 @@ const login = async () => {
       password: password.value,
     });
     user.value = data.user;
-    console.log(data.user);
+    if (data.user) {
+      authUser.updateUser(data.user);
+      authUser.updatetoken(data.session?.access_token ?? '');
+      router.push('/account');
+    }
   } catch (err) {
     console.error(err);
   }

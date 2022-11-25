@@ -1,24 +1,16 @@
 <script setup lang="ts">
 import { User } from '@supabase/gotrue-js';
 import { ref } from 'vue';
+import { useRouter } from 'vue-router';
 import { supabase } from '../supabase';
-import router from '../router';
 
 const email = ref('');
 const password = ref('');
 const confirmPassword = ref('');
 const user = ref<User | null>(null);
+const router = useRouter();
 
 const register = async () => {
-  console.log(
-    'callings',
-    supabase,
-    email,
-    password,
-    confirmPassword,
-    confirmPassword === password
-  );
-
   if (
     email.value &&
     password.value &&
