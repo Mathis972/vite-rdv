@@ -6,7 +6,7 @@ import { useAuthStore } from '../stores/auth';
 import { supabase } from '../supabase';
 const session = ref();
 const authUser = useAuthStore();
-const appointments = ref([]);
+const appointments = ref<any[]>([]);
 const router = useRouter();
 
 const loading = ref(true);

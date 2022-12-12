@@ -2,7 +2,7 @@
 import { onMounted, ref } from 'vue';
 import { supabase } from '../supabase';
 const session = ref();
-const doctors = ref([]);
+const doctors = ref<any[]>([]);
 const selectedDoctorId = ref('');
 const selectedDate = ref('');
 const loading = ref(true);
