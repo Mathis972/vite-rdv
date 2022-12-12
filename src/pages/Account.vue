@@ -6,6 +6,7 @@ import { useAuthStore } from '../stores/auth';
 import { supabase } from '../supabase';
 const session = ref();
 const authUser = useAuthStore();
+const appointments = ref([]);
 const router = useRouter();
 
 const loading = ref(true);
@@ -14,8 +15,10 @@ const username = ref('');
 onMounted(() => {
   supabase.auth.getSession().then(({ data }) => {
     session.value = data.session;
-    console.log(data.session);
     getProfile();
+    if (data.session) {
+      getAppointments();
+    }
   });
 
   supabase.auth.onAuthStateChange((_, _session) => {
@@ -23,11 +26,27 @@ onMounted(() => {
   });
 });
 
+async function getAppointments() {
+  try {
+    loading.value = true;
+    let { data, error } = await supabase
+      .from('appointments')
+      .select('*, profiles!appointments_doctor_id_fkey(*)')
+      .eq('client_id', session.value.user.id);
+    if (error) throw error;
+    if (data) {
+      appointments.value = data;
+    }
+  } catch (error) {
+    console.error(error);
+  } finally {
+    loading.value = false;
+  }
+}
+
 async function getProfile() {
   try {
     loading.value = true;
-    console.log(session.value);
-
     let { data, error } = await supabase.auth.getUser(
       session.value.access_token
     );
@@ -79,6 +98,24 @@ async function signOut() {
         :disabled="loading"
       />
     </div>
+    <h2 class="text-black">Vos rendez vous</h2>
+    <table class="table-auto text-black w-full">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Docteur</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="appointment in appointments">
+          <td>{{ appointment.date }}</td>
+          <td>
+            {{ appointment.profiles.first_name }}
+            {{ appointment.profiles.last_name }}
+          </td>
+        </tr>
+      </tbody>
+    </table>
 
     <div>
       <button class="button block" @click.prevent="signOut" :disabled="loading">
