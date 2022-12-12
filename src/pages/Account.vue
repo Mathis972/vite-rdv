@@ -63,18 +63,18 @@ async function signOut() {
 <template>
   <form class="form-widget">
     <div>
-      <label for="email">Email</label>
+      <label class="text-black" for="email">Email</label>
       <input id="email" type="text" :value="authUser.user?.email" disabled />
     </div>
     <div>
-      <label for="username">Name</label>
+      <label class="text-black" for="username">Name</label>
       <input id="username" type="text" v-model="username" />
     </div>
 
     <div>
       <input
         type="submit"
-        class="button primary block"
+        class="button primary block text-black"
         :value="loading ? 'Loading ...' : 'Update'"
         :disabled="loading"
       />
