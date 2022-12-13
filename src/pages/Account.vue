@@ -55,7 +55,12 @@ async function getProfile() {
 
     if (data.user?.email) {
       authUser.updateUser(data.user);
-      username.value = data.user?.email;
+      const { data: profileData, error: profileError } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', data.user.id)
+        .single();
+      username.value = profileData.first_name + ' ' + profileData.last_name;
     }
   } catch (error) {
     console.error(error);
@@ -104,6 +109,7 @@ async function signOut() {
         <tr>
           <th>Date</th>
           <th>Docteur</th>
+          <th>Addresse</th>
         </tr>
       </thead>
       <tbody>
@@ -112,6 +118,9 @@ async function signOut() {
           <td>
             {{ appointment.profiles.first_name }}
             {{ appointment.profiles.last_name }}
+          </td>
+          <td>
+            {{ appointment.address ?? 'Aucune données' }}
           </td>
         </tr>
       </tbody>

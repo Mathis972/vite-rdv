@@ -5,6 +5,7 @@ const session = ref();
 const doctors = ref<any[]>([]);
 const selectedDoctorId = ref('');
 const selectedDate = ref('');
+const address = ref('');
 const loading = ref(true);
 const hasError = ref(false);
 const userId = ref('');
@@ -44,9 +45,9 @@ async function getDoctors() {
 }
 
 async function bookAppointment() {
-  if (selectedDoctorId.value && selectedDate.value) {
+  if (selectedDoctorId.value && selectedDate.value && address.value) {
     console.log(
-      `booking reservation with doctor number ${selectedDoctorId.value} on ${selectedDate.value}`
+      `booking reservation with doctor number ${selectedDoctorId.value} on ${selectedDate.value} at ${address.value}`
     );
     hasError.value = false;
     try {
@@ -54,6 +55,7 @@ async function bookAppointment() {
         client_id: userId.value,
         doctor_id: selectedDoctorId.value,
         date: selectedDate.value,
+        address: address.value,
       });
       notificationInfos.value = {
         doctorId: selectedDoctorId.value,
@@ -61,7 +63,6 @@ async function bookAppointment() {
       };
       setTimeout(() => {
         notificationInfos.value = null;
-        console.log('timer end');
       }, 5000);
     } catch (err) {
       console.error(err);
@@ -81,11 +82,15 @@ async function selectDoctor(doctorId: string) {
 <template>
   <form class="form-widget">
     <p v-if="hasError" class="text-red-500">
-      Une date et un practicien sélectionnés sont nécessaires
+      Une date, un practicien et une addresse sont nécessaires
     </p>
     <div>
-      <label class="text-black" for="date">Date</label>
+      <label class="text-black p-5" for="date">Date</label>
       <input id="date" type="date" v-model="selectedDate" />
+    </div>
+    <div>
+      <label class="text-black p-5" for="address">addresse</label>
+      <input id="address" v-model="address" />
     </div>
 
     <div>
