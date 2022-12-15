@@ -6,6 +6,8 @@ const doctors = ref<any[]>([]);
 const selectedDoctorId = ref('');
 const selectedDate = ref('');
 const address = ref('');
+const lon = ref(0);
+const lat = ref(0);
 const loading = ref(true);
 const hasError = ref(false);
 const userId = ref('');
@@ -23,6 +25,11 @@ onMounted(() => {
 
   supabase.auth.onAuthStateChange((_, _session) => {
     session.value = _session;
+  });
+
+  navigator.geolocation.getCurrentPosition((nav) => {
+    lon.value = nav.coords.longitude;
+    lat.value = nav.coords.latitude;
   });
 });
 
@@ -56,6 +63,8 @@ async function bookAppointment() {
         doctor_id: selectedDoctorId.value,
         date: selectedDate.value,
         address: address.value,
+        lon: lon.value,
+        lat: lat.value,
       });
       notificationInfos.value = {
         doctorId: selectedDoctorId.value,
