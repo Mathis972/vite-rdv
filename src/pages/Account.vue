@@ -11,8 +11,9 @@ const router = useRouter();
 
 const loading = ref(true);
 const username = ref('');
+const isInstalled = ref(false);
 
-onMounted(() => {
+onMounted(async () => {
   supabase.auth.getSession().then(({ data }) => {
     session.value = data.session;
     getProfile();
@@ -24,6 +25,8 @@ onMounted(() => {
   supabase.auth.onAuthStateChange((_, _session) => {
     session.value = _session;
   });
+
+  isInstalled.value = await checkIsInstalled();
 });
 
 async function getAppointments() {
@@ -87,6 +90,20 @@ window.addEventListener('beforeinstallprompt', (e) => {
   deferredPrompt = e;
 });
 
+async function checkIsInstalled() {
+  // For iOS
+  if (window.navigator.standalone) return true;
+
+  // For Android
+  if (window.matchMedia('(display-mode: standalone)').matches) return true;
+
+  if ('getInstalledRelatedApps' in window.navigator) {
+    return (await window.navigator.getInstalledRelatedApps().length) > 0;
+  }
+  // If neither is true, it's not installed
+  return await false;
+}
+
 async function installApp() {
   if (deferredPrompt !== null) {
     deferredPrompt.prompt();
@@ -145,6 +162,7 @@ async function installApp() {
         Sign Out
       </button>
       <button
+        v-if="!isInstalled"
         class="button block"
         @click.prevent="installApp"
         :disabled="loading"
