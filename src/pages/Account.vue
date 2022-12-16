@@ -82,6 +82,20 @@ async function signOut() {
     loading.value = false;
   }
 }
+let deferredPrompt: any = null;
+window.addEventListener('beforeinstallprompt', (e) => {
+  deferredPrompt = e;
+});
+
+async function installApp() {
+  if (deferredPrompt !== null) {
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    if (outcome === 'accepted') {
+      deferredPrompt = null;
+    }
+  }
+}
 </script>
 
 <template>
@@ -129,6 +143,13 @@ async function signOut() {
     <div>
       <button class="button block" @click.prevent="signOut" :disabled="loading">
         Sign Out
+      </button>
+      <button
+        class="button block"
+        @click.prevent="installApp"
+        :disabled="loading"
+      >
+        Install
       </button>
     </div>
   </form>
