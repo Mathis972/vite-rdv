@@ -94,12 +94,15 @@ window.addEventListener('beforeinstallprompt', (e) => {
 
 async function checkIsInstalled() {
   // For iOS
-  if (window.navigator.standalone) return true;
+  if ('standalone' in window.navigator) {
+    if (window.navigator.standalone) return true;
+  }
 
   // For Android
   if (window.matchMedia('(display-mode: standalone)').matches) return true;
 
   if ('getInstalledRelatedApps' in window.navigator) {
+    //@ts-ignore
     return (await window.navigator.getInstalledRelatedApps().length) > 0;
   }
   // If neither is true, it's not installed
