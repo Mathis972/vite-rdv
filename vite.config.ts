@@ -17,12 +17,6 @@ export default defineConfig({
         short_name: 'DocApp',
         description: 'une appli PWA',
         theme_color: '#ffffff',
-        related_applications: [
-          {
-            platform: 'webapp',
-            url: 'https://main--imaginative-belekoy-a9ceb8.netlify.app/manifest.json',
-          },
-        ],
         icons: [
           {
             src: 'vite.svg',
