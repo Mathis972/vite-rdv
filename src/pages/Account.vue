@@ -12,6 +12,7 @@ const router = useRouter();
 const loading = ref(true);
 const username = ref('');
 const isInstalled = ref(false);
+const installNoSupported = ref(true);
 
 onMounted(async () => {
   supabase.auth.getSession().then(({ data }) => {
@@ -87,6 +88,7 @@ async function signOut() {
 }
 let deferredPrompt: any = null;
 window.addEventListener('beforeinstallprompt', (e) => {
+  installNoSupported.value = false;
   deferredPrompt = e;
 });
 
@@ -101,7 +103,7 @@ async function checkIsInstalled() {
     return (await window.navigator.getInstalledRelatedApps().length) > 0;
   }
   // If neither is true, it's not installed
-  return await false;
+  return false;
 }
 
 async function installApp() {
@@ -162,7 +164,7 @@ async function installApp() {
         Sign Out
       </button>
       <button
-        v-if="!isInstalled"
+        v-if="!installNoSupported || (!isInstalled && !installNoSupported)"
         class="button block"
         @click.prevent="installApp"
         :disabled="loading"
