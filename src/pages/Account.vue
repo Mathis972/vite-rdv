@@ -2,8 +2,9 @@
 import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '../stores/auth';
-
 import { supabase } from '../supabase';
+import { openDB, IDBPDatabase } from 'idb';
+
 const session = ref();
 const authUser = useAuthStore();
 const appointments = ref<any[]>([]);
@@ -13,8 +14,13 @@ const loading = ref(true);
 const username = ref('');
 const isInstalled = ref(false);
 const installNoSupported = ref(true);
+const db = ref<IDBPDatabase<unknown> | null>(null);
 
 onMounted(async () => {
+  db.value = await openDB('appointments-store');
+  const tx = db.value.transaction('appointments', 'readwrite');
+  const store = tx.objectStore('appointments');
+  appointments.value = await store.get('content');
   supabase.auth.getSession().then(({ data }) => {
     session.value = data.session;
     getProfile();
@@ -40,6 +46,9 @@ async function getAppointments() {
     if (error) throw error;
     if (data) {
       appointments.value = data;
+      if (db.value) {
+        await db.value.put('appointments', data, 'content');
+      }
     }
   } catch (error) {
     console.error(error);
